@@ -2,13 +2,28 @@
 
 import { ChangeEvent, useState } from 'react'
 
-import { Box, Button, TextField } from '@mui/material'
+import { Box, Button, Dialog, IconButton, TextField, Tooltip } from '@mui/material'
 import { inputLabelClasses } from '@mui/material'
+import { Quote } from '@/interfaces/general'
+import { ContentCopy, CopyAll } from '@mui/icons-material'
+import { baseQuoteStyle, iconButtonQuoteStyle } from './globalStyles'
 
 export default function Home() {
   const [conversation, setConversation] = useState<string | null>(null)
   const [converstaionError, setConversationError] = useState<string | null>(null)
-  const [quotes, setQuotes] = useState<string[] | null>(null)
+  const [quotes, setQuotes] = useState<Quote[] | null>(null)
+  const [quoteCopiedDialogOpen, setQuoteCopiedDialogOpen] = useState<boolean>(false)
+
+  const copyQuote = (quoteToCopy: number, copyReference: boolean) => {
+    let copiedQuote: string = quotes![quoteToCopy].quote
+    if (copyReference) {
+      console.log('Quote & Reference')
+      copiedQuote += ` - ${quotes![quoteToCopy].reference}`
+    }
+
+    navigator.clipboard.writeText(copiedQuote)
+    alert(`${copyReference ? 'Quote & reference' : 'Quote'} copied to clipboard.`)
+  }
 
   const handleConversationReplyRequest = async () => {
     if (conversation) {
@@ -22,10 +37,8 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
       })
-      const result = await replies.json()
+      const result: Quote[] = await replies.json()
       setQuotes(result)
-
-      console.log('Completion', result)
     } else {
       setConversationError('Conversation is empty')
     }
@@ -77,35 +90,97 @@ export default function Home() {
         </Button>
         {quotes && (
           <Box>
-            <Box>
-              <TextField
-                className="bg-blue-300 to-white flex"
-                variant="outlined"
-                sx={{ borderRadius: 1, mt: 2 }}
-                value={quotes[0]}
-                multiline
-              />
-            </Box>
-            <Box>
-              <TextField
-                className="bg-blue-300 to-white flex"
-                variant="outlined"
-                sx={{ borderRadius: 1, mt: 2 }}
-                value={quotes[1]}
-                multiline
-              />
-            </Box>
-            <Box>
-              <TextField
-                className="bg-blue-300 to-white flex"
-                variant="outlined"
-                sx={{ borderRadius: 1, mt: 2 }}
-                value={quotes[2]}
-                multiline
-              />
-            </Box>
+            {quotes[0].quote !== '' && (
+              <Box sx={{ display: 'flex' }}>
+                <TextField
+                  className="bg-blue-300 to-white flex-grow"
+                  variant="outlined"
+                  sx={baseQuoteStyle}
+                  value={`${quotes[0].quote} - ${quotes[0].reference}`}
+                  multiline
+                />
+                {/* TODO: top: -2 not working, check on this! */}
+                <Tooltip title="Copy Quote Only" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(0, false)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <ContentCopy />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Copy Quote & Reference" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(0, true)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <CopyAll />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+            {quotes[1].quote !== '' && (
+              <Box sx={{ display: 'flex' }}>
+                <TextField
+                  className="bg-blue-300 to-white flex-grow"
+                  variant="outlined"
+                  sx={{ borderRadius: 1, mt: 2 }}
+                  value={`${quotes[1].quote} - ${quotes[1].reference}`}
+                  multiline
+                />
+                <Tooltip title="Copy Quote Only" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(1, false)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <ContentCopy />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Copy Quote & Reference" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(1, true)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <CopyAll />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+            {quotes[2].quote !== '' && (
+              <Box sx={{ display: 'flex' }}>
+                <TextField
+                  className="bg-blue-300 to-white flex-grow"
+                  variant="outlined"
+                  sx={{ borderRadius: 1, mt: 2 }}
+                  value={`${quotes[2].quote} - ${quotes[2].reference}`}
+                  multiline
+                />
+                <Tooltip title="Copy Quote Only" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(2, false)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <ContentCopy />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Copy Quote & Reference" sx={{ top: -2 }}>
+                  <IconButton
+                    className="bg-blue-950  hover:bg-blue-900 flex"
+                    onClick={() => copyQuote(2, true)}
+                    sx={iconButtonQuoteStyle}
+                  >
+                    <CopyAll />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
           </Box>
         )}
+        {quoteCopiedDialogOpen && <Dialog open title="Copied To clipboard" />}
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>
