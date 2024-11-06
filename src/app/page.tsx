@@ -1,12 +1,24 @@
 'use client'
 
-import { ChangeEvent, useState } from 'react'
-
-import { Box, Button, Dialog, IconButton, TextField, Tooltip } from '@mui/material'
-import { inputLabelClasses } from '@mui/material'
-import { Quote } from '@/interfaces/general'
 import { ContentCopy, CopyAll } from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  inputLabelClasses,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+
 import { baseQuoteStyle, iconButtonQuoteStyle } from './globalStyles'
+import React, { ChangeEvent, useState } from 'react'
+import { Quote } from 'src/interfaces/general'
 
 export default function Home() {
   const [conversation, setConversation] = useState<string | null>(null)
@@ -22,7 +34,7 @@ export default function Home() {
     }
 
     navigator.clipboard.writeText(copiedQuote)
-    alert(`${copyReference ? 'Quote & reference' : 'Quote'} copied to clipboard.`)
+    setQuoteCopiedDialogOpen(true)
   }
 
   const handleConversationReplyRequest = async () => {
@@ -48,6 +60,10 @@ export default function Home() {
     setConversation(event.target.value)
   }
 
+  const handleDialogClose = () => {
+    setQuoteCopiedDialogOpen(false)
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="row-start-1 flex">
@@ -59,7 +75,7 @@ export default function Home() {
       <main className="flex-grow flex-col gap-8 row-start-2 items-center sm:items-start container mx-auto">
         <TextField
           className="bg-blue-500 flex-grow"
-          label="Conversation For Reply"
+          label="Conversation for reply"
           variant="outlined"
           onChange={handleConversationChange}
           sx={{ borderRadius: 1, mb: 1 }}
@@ -180,7 +196,35 @@ export default function Home() {
             )}
           </Box>
         )}
-        {quoteCopiedDialogOpen && <Dialog open title="Copied To clipboard" />}
+        {quoteCopiedDialogOpen && (
+          <Dialog open sx={{ '& .MuiDialog-paper': { width: '80%' } }}>
+            <DialogTitle className="bg-blue-300 to-white">Quote Copied</DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={handleDialogClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                // color: theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <DialogContent dividers className="bg-blue-300 to-white">
+              <Typography>{`Quote copied to clipboard.`}</Typography>
+            </DialogContent>
+            <DialogActions className="bg-blue-300 to-white">
+              <Button
+                onClick={handleDialogClose}
+                variant="contained"
+                className="bg-blue-950  hover:bg-blue-900"
+              >
+                OK
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
     </div>

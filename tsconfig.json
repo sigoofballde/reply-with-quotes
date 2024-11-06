@@ -12,15 +12,18 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": "./",
+
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
+      "@/components/*": ["components/*"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "setupTests.tsx"],
   "exclude": ["node_modules"]
 }
